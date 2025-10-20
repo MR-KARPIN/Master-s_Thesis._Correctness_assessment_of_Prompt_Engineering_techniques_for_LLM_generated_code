@@ -1,0 +1,68 @@
+SCORE CALCULATION
+------------------------------------------------------------
+score = 
+(
+ 10 × cells explored +
+500 × cities owned +
+250 × stores owned +
+100 × units owned + 
+ 10 × gold owned +
+  2 × stone owned +
+  1 × wood owned
+)
+
+COST OF CREATION
+-----------------------------------------------------------
+explore cell =					   |   6h
+town hall = 	250g | 150s | 200w | 240h
+store = 	 	 50g | 50s  | 50w  | 120h
+unit = 			150g |		|	   |  80h
+
+econtrar una casilla = 1 de Oro
+econtrar una casilla = 5 de Piedra
+econtrar una casilla = 10 de Madera
+
+COST OF CREATION IN POINTS
+----------------------------------------------------------
+town hall = -3000pts - 240hDeUnidad + 500pts = -2500 - 240*VHU 							 = ~ -3820 pts 
+store = -650pts - 120hDeUnidad + 100pts 	 = -550 - 120*VHU 							 = ~ -1210 pts
+unit = -1500pts - 80hDeUnidad + 100pts 		 = ~ -1400 pts - 80*VHU + HorasRestantes*VHU = ~ -1840 pts + HorasRestantes*VHU
+
+ROI
+----------------------------------------------------------
+explore cell = 10pts/6h = 1,6pts/h
+Gold 		 			= 12.5 * ~0.3 pts/h = ~4.00 pts/h
+Stone 		 			= 2.5  * ~0.7 pts/h = ~1.75 pts/h
+Wood		 			= 10pts/6h 			= 1,6pts/h
+VALOR H/UNIDAD (VHU) = ~5.5pts/hora/unidad
+
+
+TACTIC
+------------------------------------------------------------------------
+Conociendo la cantidad de horas que tenemos tenemos que pensar:
+llegamos al limite de storage, si solo gathereamos?
+	Si -> Hacer eso
+	No -> 
+		construyendo ciudad y store nos da tiempo a quedarnos igual?
+		No-> Solo minar y explorar cuando lleguemos al limite
+		Si-> Hacerlo. 
+
+Claro, pero si tenemos un límite máximo de recursos alto, a lo mejor ni renta pillar edificios. Sólamente explorar y pillar recursos. Etonces dependemos del límite de recursos y el tiempo de juego
+
+Si dura poco: pillar piedra
+
+NOTES
+------------------------------------------------------------------------
+Yo propongo la siguiente táctica:
+	1. Todos exploran hasta encontrar dos recursos
+	2. El tercero va explorando (Explorador) y va comunicando los recursos que va encontrando (Los otros son Mineros)
+	3. En cuanto se tenga materia suficiente para construir un townhall un Minero crea uno cerquita, este pasará a ser un MineroFollador
+	4. Aqui tenemos que ver porque podemos hacer otro y que esté minando mas o simplemente ponernos a hacer tiendas y construir
+
+De todas maneras, tenemos que maximizar el recoger recursos para ganar asi que la cantidad de recursos nos da igual porque vamos a intentar minarlos lo máximo.
+
+
+
+
+Gold and stone 10 each 8 hours
+Wood		   10 each 6 hours

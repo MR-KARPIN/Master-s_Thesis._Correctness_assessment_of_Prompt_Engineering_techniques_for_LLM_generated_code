@@ -1,0 +1,66 @@
+To solve this problem, we can use dynamic programming to find the minimum number of insertions required to transform the input string into a palindrome. Additionally, we need to keep track of the actual palindrome formed to ensure it's the lexicographically smallest one.
+
+Here's a step-by-step plan to implement this:
+
+1. **Dynamic Programming Table:** Use a 2D table `dp` where `dp[i][j]` represents the minimum number of insertions needed to make the substring `s[i..j]` a palindrome.
+
+2. **Reconstruction Table:** Use another 2D table `solution` to store the resulting palindrome for each substring `s[i..j]`.
+
+3. **Base Cases:** 
+   - A single character is already a palindrome, so `dp[i][i] = 0` and `solution[i][i] = s[i]`.
+
+4. **Fill the Tables:**
+   - If `s[i] == s[j]`, then `dp[i][j] = dp[i+1][j-1]` and `solution[i][j] = s[i] + solution[i+1][j-1] + s[j]`.
+   - If `s[i] != s[j]`, choose the minimum insertion path:
+     - If `dp[i+1][j] < dp[i][j-1]`, then `dp[i][j] = dp[i+1][j] + 1` and `solution[i][j] = s[i] + solution[i+1][j] + s[i]`.
+     - If `dp[i+1][j] > dp[i][j-1]`, then `dp[i][j] = dp[i][j-1] + 1` and `solution[i][j] = s[j] + solution[i][j-1] + s[j]`.
+     - If they are equal, choose the lexicographically smallest palindrome.
+
+5. **Return the Result:** The result will be stored in `solution[0][n-1]` after processing the entire string.
+
+Here's the implementation:
+
+```python
+def find_min_insertions_palindrome(s: str) -> str:
+    n = len(s)
+    if n == 0:
+        return ""
+    
+    # Initialize DP and solution tables
+    dp = [[0] * n for _ in range(n)]
+    solution = [[""] * n for _ in range(n)]
+    
+    # Fill base cases
+    for i in range(n):
+        solution[i][i] = s[i]
+    
+    # Fill tables
+    for length in range(2, n + 1):  # length is the length of the substring
+        for i in range(n - length + 1):
+            j = i + length - 1
+            if s[i] == s[j]:
+                dp[i][j] = dp[i + 1][j - 1]
+                solution[i][j] = s[i] + solution[i + 1][j - 1] + s[j]
+            else:
+                if dp[i + 1][j] < dp[i][j - 1]:
+                    dp[i][j] = dp[i + 1][j] + 1
+                    solution[i][j] = s[i] + solution[i + 1][j] + s[i]
+                elif dp[i + 1][j] > dp[i][j - 1]:
+                    dp[i][j] = dp[i][j - 1] + 1
+                    solution[i][j] = s[j] + solution[i][j - 1] + s[j]
+                else:
+                    dp[i][j] = dp[i + 1][j] + 1
+                    sol1 = s[i] + solution[i + 1][j] + s[i]
+                    sol2 = s[j] + solution[i][j - 1] + s[j]
+                    solution[i][j] = min(sol1, sol2)
+    
+    # The answer is the palindrome formed for the entire string
+    return solution[0][n - 1]
+
+# Example usage:
+input_string = "race"
+result = find_min_insertions_palindrome(input_string)
+print(result)  # Output: "ecarace"
+```
+
+This function calculates the fewest insertions needed to transform the input string into a palindrome and returns the lexicographically smallest resulting palindrome.

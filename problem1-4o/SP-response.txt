@@ -1,0 +1,68 @@
+To solve the problem of finding the palindrome that can be made by inserting the fewest number of characters into a given string and returning the lexicographically earliest palindrome, we can use dynamic programming. Here's a step-by-step plan and the corresponding code:
+
+### Plan:
+
+1. **Understand the Problem**: We need to insert the minimum number of characters into the string to make it a palindrome. If multiple palindromes can be formed with the same number of insertions, we should return the lexicographically smallest one.
+
+2. **Dynamic Programming Table**: Use a 2D DP table `dp[i][j]` where `dp[i][j]` represents the minimum number of insertions needed to make the substring `s[i:j+1]` a palindrome.
+
+3. **Base Cases**:
+   - A single character is already a palindrome, so `dp[i][i] = 0` for all `i`.
+   - Two consecutive identical characters form a palindrome, so `dp[i][i+1] = 0` if `s[i] == s[i+1]`, otherwise `dp[i][i+1] = 1`.
+
+4. **Recursive Relation**:
+   - If `s[i] == s[j]`, then `dp[i][j] = dp[i+1][j-1]`.
+   - If `s[i] != s[j]`, then `dp[i][j] = min(dp[i+1][j], dp[i][j-1]) + 1`.
+
+5. **Construct the Palindrome**: Once we have the `dp` table filled, we can reconstruct the palindrome by keeping track of choices made. Start from `dp[0][n-1]` and move towards the base cases, building the palindrome string.
+
+6. **Return the Result**: The constructed palindrome will be the result.
+
+### Code:
+
+```python
+def find_min_insertions_palindrome(s):
+    n = len(s)
+    dp = [[0] * n for _ in range(n)]
+    
+    # Fill the DP table
+    for length in range(2, n + 1):
+        for i in range(n - length + 1):
+            j = i + length - 1
+            if s[i] == s[j]:
+                dp[i][j] = dp[i + 1][j - 1]
+            else:
+                dp[i][j] = min(dp[i + 1][j], dp[i][j - 1]) + 1
+
+    # Reconstruct the palindrome
+    i, j = 0, n - 1
+    result = []
+    while i <= j:
+        if s[i] == s[j]:
+            result.append(s[i])
+            i += 1
+            j -= 1
+        elif dp[i + 1][j] < dp[i][j - 1]:
+            result.append(s[i])
+            i += 1
+        else:
+            result.append(s[j])
+            j -= 1
+    
+    # Construct the full palindrome
+    left_part = ''.join(result)
+    right_part = left_part[::-1]
+    if i > j:
+        return left_part + right_part
+    else:
+        return left_part + s[i] + right_part
+
+# Example usage:
+s = "race"
+print(find_min_insertions_palindrome(s))  # Output: "ecarace"
+```
+
+### Explanation:
+- The `dp` table helps us determine the minimum number of insertions needed.
+- The reconstruction step builds the palindrome based on the choices made to minimize insertions.
+- The final palindrome is constructed by appending the left part, the middle character (if any), and the reverse of the left part. This ensures the palindrome property is maintained.

@@ -1,0 +1,88 @@
+To solve the problem of selecting `k` points on the boundary of a square such that the minimum Manhattan distance between any two selected points is maximized, we can take the following logical approach:
+
+### Logical Reasoning
+
+1. **Understanding the Problem**:
+   - We have a square with corners at (0, 0), (0, side), (side, 0), and (side, side).
+   - The points provided lie on the boundary of this square.
+   - Our goal is to select `k` points such that the minimum Manhattan distance between any pair of selected points is as large as possible.
+
+2. **Manhattan Distance on the Boundary**:
+   - Points on the boundary of a square can be divided into four segments:
+     1. From (0, 0) to (side, 0)
+     2. From (side, 0) to (side, side)
+     3. From (side, side) to (0, side)
+     4. From (0, side) to (0, 0)
+   - For any two points on the boundary, the Manhattan distance can be calculated based on their position on these segments.
+
+3. **Goal - Maximize the Minimum Distance**:
+   - We need to distribute the selected `k` points around the boundary such that the minimum distance between any two selected points is maximized.
+   - This suggests an even distribution strategy across the perimeter of the square.
+
+4. **Binary Search Approach**:
+   - We can use binary search to determine the maximum possible minimum Manhattan distance.
+   - The search space for the distance can range from `0` to `2 * side` (the maximum perimeter distance).
+   - For each middle point in the binary search, check if it's possible to select `k` points such that the minimum distance between them is at least this middle point.
+
+5. **Feasibility Check**:
+   - To check feasibility for a given distance `d`, iterate over the sorted list of points and try to place the next point such that it is at least `d` away from the last selected point.
+   - If you can place `k` points this way, the distance `d` is feasible.
+
+6. **Implementation**:
+   - Sort the points based on their position on the boundary.
+   - Use binary search to find the maximum minimum distance.
+
+### Implementation
+
+Here is the Python function implementing the above logic:
+
+```python
+def max_min_manhattan_distance(side, k, points):
+    # Helper function to convert a point to its perimeter position
+    def point_to_position(x, y):
+        if y == 0:
+            return x
+        elif x == side:
+            return side + y
+        elif y == side:
+            return 3 * side - x
+        else:
+            return 4 * side - y
+    
+    # Convert points to their respective positions on the boundary
+    positions = sorted([point_to_position(x, y) for x, y in points])
+    
+    # Function to check if a given minimum distance is possible
+    def can_achieve_distance(min_dist):
+        count = 1
+        last_position = positions[0]
+        
+        for pos in positions:
+            if pos - last_position >= min_dist:
+                count += 1
+                last_position = pos
+                if count == k:
+                    return True
+                
+        return False
+
+    # Binary search for the maximum minimum distance
+    low, high = 0, 2 * side
+    result = 0
+    
+    while low <= high:
+        mid = (low + high) // 2
+        if can_achieve_distance(mid):
+            result = mid
+            low = mid + 1
+        else:
+            high = mid - 1
+    
+    return result
+
+# Example usage
+# side = 10, k = 3, points = [[0, 0], [10, 0], [10, 10], [0, 10]]
+# max_min_manhattan_distance(side, k, points)
+```
+
+This function uses a binary search to determine the maximum possible minimum Manhattan distance between `k` selected points on the boundary of the square. It efficiently checks each candidate distance's feasibility using the sorted positions of the points on the boundary.

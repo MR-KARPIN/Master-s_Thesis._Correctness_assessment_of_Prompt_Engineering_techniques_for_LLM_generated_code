@@ -1,0 +1,80 @@
+To solve this problem, we need to build a tree from the given edges and then process each query to find the weighted median node. The approach involves:
+
+1. Building an adjacency list from the edges to represent the tree.
+2. Using Depth-First Search (DFS) or Breadth-First Search (BFS) to find the path between two nodes for each query.
+3. Calculating the total path weight and determining the weighted median node for each query based on the path weights.
+
+Here's a Python function to implement this approach:
+
+```python
+def find_weighted_median(n, edges, queries):
+    from collections import defaultdict, deque
+
+    # Build the adjacency list for the tree
+    tree = defaultdict(list)
+    for u, v, w in edges:
+        tree[u].append((v, w))
+        tree[v].append((u, w))
+
+    def find_path_and_weights(start, end):
+        # BFS to find the path from start to end
+        queue = deque([(start, -1, 0)])  # (current_node, parent, path_weight)
+        parent = {start: None}
+        path_weights = {start: 0}
+        
+        while queue:
+            current, par, current_weight = queue.popleft()
+            if current == end:
+                break
+            for neighbor, weight in tree[current]:
+                if neighbor == par:
+                    continue
+                if neighbor not in parent:
+                    parent[neighbor] = current
+                    path_weights[neighbor] = current_weight + weight
+                    queue.append((neighbor, current, current_weight + weight))
+        
+        # Construct the path from start to end
+        path = []
+        node = end
+        while node is not None:
+            path.append(node)
+            node = parent[node]
+        path.reverse()
+        
+        return path, path_weights
+    
+    def get_weighted_median(path, path_weights):
+        total_weight = path_weights[path[-1]]
+        half_weight = total_weight / 2
+        
+        for i in range(1, len(path)):
+            if path_weights[path[i]] >= half_weight:
+                return path[i]
+        return path[-1]  # In case no node found, return the last node (shouldn't happen)
+
+    results = []
+    
+    for uj, vj in queries:
+        path, path_weights = find_path_and_weights(uj, vj)
+        median_node = get_weighted_median(path, path_weights)
+        results.append(median_node)
+    
+    return results
+
+# Example usage:
+n = 6
+edges = [[0, 1, 3], [1, 2, 4], [1, 3, 5], [0, 4, 2], [4, 5, 1]]
+queries = [[0, 2], [4, 3]]
+print(find_weighted_median(n, edges, queries))
+```
+
+### Explanation:
+
+1. **Tree Construction:** We use an adjacency list to represent the undirected tree. Each node points to its neighbors along with the corresponding edge weights.
+
+2. **Path and Weights Calculation:** For each query, we perform a BFS starting from `uj` to find the path to `vj`. We store the parent for each node to reconstruct the path and keep track of the cumulative weights from `uj`.
+
+3. **Median Node Calculation:** With the path and cumulative weights, we determine the weighted median node by finding the first node where the cumulative path weight exceeds half of the total path weight.
+
+This function efficiently handles multiple queries by calculating the path and weighted median independently for each query.

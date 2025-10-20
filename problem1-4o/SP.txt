@@ -1,0 +1,33 @@
+Intent: Create a python function that for a tree with n nodes rooted at node 0 (numbered from 0 to n-1), where each node i has a value given by values[i], determines the maximum sum of values along any path that starts at a node u and only goes downward in the tree. 
+
+Plan and code: Lets think it step by step:
+1. We need to calculate a way to distinguish the different paths that can be taken, from the root to the leaves
+2. Once we have each of the paths, calculate wich is the best sum of values along each
+3. When we have all of the best sums, return the greatest.
+
+def bestSumDownwardTreePath(parentsList, values):
+n = len(parentsList)
+tree = [[] for _ in range(n)]
+
+# Build the tree from parentsList
+for child, parent in enumerate(parentsList):
+    if parent != -1:  # if the parent is not -1 (root)
+        tree[parent].append(child)
+
+# A helper function to perform DFS and compute the maximum path sum
+def dfs(node):
+    # Initialize the maximum sum for the current node to its value
+    max_sum = values[node]
+    
+    # Explore all the children of the current node
+    for child in tree[node]:
+        max_sum = max(max_sum, values[node] + dfs(child))
+    
+    return max_sum
+
+# Call dfs starting from the root node (0)
+return dfs(0)
+
+Intent: Create a python function that given a string, finds the palindrome that can be made by inserting the fewest number of characters into the given string. If there are multiple palindromes with the same minimum number of insertions, return the lexicographically earliest palindrome (the first one alphabetically).
+
+Plan and code:

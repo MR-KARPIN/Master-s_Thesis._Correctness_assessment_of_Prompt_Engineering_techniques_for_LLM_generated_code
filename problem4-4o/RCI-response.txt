@@ -1,0 +1,67 @@
+Let's re-evaluate the provided solution to ensure it addresses the problem correctly and efficiently:
+
+### Issues Identified
+
+1. **Mixing Strategy**:
+   - The current approach attempts to resolve adjacent discrepancies directly by merging any pair where `nums[i] > nums[i + 1]`, but this might not always lead to the minimal number of operations because it treats each descending sequence fix independently without regard to the eventual sequence consistency downstream.
+   
+2. **Optimal Merging Decision**:
+   - The code merges the first available decreasing pair without considering the impact of subsequent changes which could result from merging further along or with different conditions.
+
+### Revised Approach
+
+Given the complexity and issues mentioned, let's redefine how to resolve this:
+
+1. **Focus on Minimum Adjacent Pair Merging**:
+   - Always search for the minimum adjacent pair sum in situations where descending order occurs.
+   - Ensure these merges lead toward building a non-decreasing sequence intentionally through strategic selection.
+
+2. **Iterate Until Fully Non-Decreasing**:
+   - Continuously improve parts of the list showing descending order while maintaining comparatively consistent order through careful back-and-forth checking after merges.
+
+Here’s an updated attempt to resolve the problem:
+
+```python
+def minOperationsToNonDecreasing(nums):
+    operations = 0
+
+    # Helper to determine if the array is non-decreasing
+    def is_non_decreasing(arr):
+        return all(arr[i] <= arr[i + 1] for i in range(len(arr) - 1))
+
+    while not is_non_decreasing(nums):
+        min_sum = float('inf')
+        min_index = -1
+        
+        # Find the minimal sum of two adjacent elements where nums[i] > nums[i + 1]
+        for i in range(len(nums) - 1):
+            if nums[i] > nums[i + 1]:
+                pair_sum = nums[i] + nums[i + 1]
+                if pair_sum < min_sum:
+                    min_sum = pair_sum
+                    min_index = i
+        
+        # Merge the identified pair with the minimum sum causing the issue
+        if min_index != -1:
+            nums[min_index] = nums[min_index] + nums[min_index + 1]
+            nums.pop(min_index + 1)
+            operations += 1
+
+    return operations
+
+# Example Usage
+nums = [4, 3, 2, 1]
+print(minOperationsToNonDecreasing(nums))  # Outputs the minimum number of operations
+```
+
+### Explanation:
+
+- **Systematic Merging**: Each time a decrease is detected (i.e., `nums[i] > nums[i + 1]`), evaluate the least disruptive merge outcome for that step (`nums[i] + nums[i + 1]`).
+  
+- **Iterative Progress**: Adjusts each incorrect part incrementally — ensures that every replacement moves toward a non-decreasing order, choosing the minimal disturbance option.
+
+- **Backtracking Not Needed Explicitly**: Once merging decisions are effectively directing transformation towards a resolved state, simple back-and-forth adjustments help without deep re-evaluations.
+
+### Summary:
+
+This revised implementation provides a balance between addressing descending pairs through selective merging and readjustment while improving alignment towards a non-decreasing array actively. Additionally, each loop deliberately gauges improvement steps until goals are achieved.

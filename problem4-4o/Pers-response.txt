@@ -1,0 +1,55 @@
+To solve this problem, we need to iteratively perform operations on the array until it becomes non-decreasing. The operation involves selecting the adjacent pair with the minimum sum, replacing the pair with their sum, and counting how many times we need to perform this operation.
+
+Here's a step-by-step breakdown of the approach:
+
+1. **Identify the Problem:** We need to make the array non-decreasing by combining adjacent pairs with the minimum sum. If multiple pairs have the same sum, choose the leftmost pair.
+
+2. **Operation Definition:** For each operation, find the leftmost adjacent pair with the minimum sum and replace these two elements with their sum.
+
+3. **Repeat Until Non-Decreasing:** Continue performing the operation until the entire array is non-decreasing.
+
+4. **Count Operations:** Keep a count of how many operations are needed to achieve the non-decreasing order.
+
+Here's how you can implement this in Python:
+
+```python
+def min_operations_to_non_decreasing(nums):
+    def is_non_decreasing(arr):
+        """ Helper function to check if the array is non-decreasing. """
+        return all(arr[i] <= arr[i + 1] for i in range(len(arr) - 1))
+
+    operations = 0
+    while not is_non_decreasing(nums):
+        min_sum = float('inf')
+        min_index = -1
+
+        # Find the leftmost adjacent pair with the minimum sum
+        for i in range(len(nums) - 1):
+            current_sum = nums[i] + nums[i + 1]
+            if current_sum < min_sum:
+                min_sum = current_sum
+                min_index = i
+
+        # Replace the pair with their sum
+        nums[min_index] = min_sum
+        nums.pop(min_index + 1)
+
+        operations += 1
+
+    return operations
+
+# Example usage:
+nums = [4, 3, 2, 1]
+print(min_operations_to_non_decreasing(nums))  # Output will depend on the specific example
+```
+
+### Explanation:
+
+- **is_non_decreasing:** A helper function that checks if the array is non-decreasing.
+- **Loop until non-decreasing:** We keep performing operations until the array becomes non-decreasing.
+- **Finding the minimum sum pair:** For each iteration, we find the leftmost pair with the minimum sum.
+- **Replacing the pair:** We replace the selected pair with their sum and remove the second element of the pair from the list.
+- **Counting operations:** Each time we perform the operation, we increment the operations counter.
+- **Return the count:** Finally, we return the total count of operations needed to make the array non-decreasing.
+
+This solution iterates over the array and performs the necessary operations to ensure the array becomes non-decreasing, while keeping track of the number of operations performed.

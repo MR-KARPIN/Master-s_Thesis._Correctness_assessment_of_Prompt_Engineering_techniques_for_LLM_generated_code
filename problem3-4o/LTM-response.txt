@@ -1,0 +1,71 @@
+To solve this problem, we need to implement a function that handles two main tasks: constructing the tree from the given edges and processing each query to find the weighted median node along the specified path. Here’s a step-by-step outline of how we can achieve this:
+
+1. **Tree Representation**: Use an adjacency list to represent the tree. This will help us efficiently traverse the tree and perform depth-first search (DFS) operations.
+
+2. **DFS for Path Weight Calculation**: Implement a DFS that can calculate the total weight of the path between any two nodes and also keep track of the cumulative weights along the path. This will allow us to quickly determine the weighted median node for each query.
+
+3. **Processing Queries**: For each query, use the DFS results to find the point where the cumulative weight first meets or exceeds half of the total path weight.
+
+4. **Return the Results**: Store the results for each query and return them as an array.
+
+Here’s the Python function implementing this approach:
+
+```python
+from collections import defaultdict
+
+def find_weighted_median(n, edges, queries):
+    # Build the tree as an adjacency list
+    tree = defaultdict(list)
+    for u, v, w in edges:
+        tree[u].append((v, w))
+        tree[v].append((u, w))
+
+    # Helper function to find path and weights using DFS
+    def dfs(node, parent, target, path, weights):
+        if node == target:
+            return True
+        for neighbor, weight in tree[node]:
+            if neighbor == parent:
+                continue
+            path.append(neighbor)
+            weights.append(weight)
+            if dfs(neighbor, node, target, path, weights):
+                return True
+            path.pop()
+            weights.pop()
+        return False
+
+    # Answer each query
+    results = []
+    for uj, vj in queries:
+        path = [uj]
+        weights = []
+        dfs(uj, -1, vj, path, weights)
+
+        total_weight = sum(weights)
+        half_weight = total_weight / 2
+
+        # Find the weighted median
+        cumulative_weight = 0
+        for i in range(len(weights)):
+            cumulative_weight += weights[i]
+            if cumulative_weight >= half_weight:
+                results.append(path[i + 1])  # path[i] is starting node, so take path[i + 1]
+                break
+
+    return results
+
+# Example usage:
+n = 5
+edges = [[0, 1, 2], [1, 2, 3], [1, 3, 4], [3, 4, 5]]
+queries = [[0, 2], [0, 4], [2, 4]]
+print(find_weighted_median(n, edges, queries))
+```
+
+### Explanation:
+- **Tree Construction**: We use a dictionary to represent the adjacency list of the tree.
+- **DFS**: The `dfs` function is used to find the path and edge weights between two nodes. It recursively explores the tree and backtracks if the target node is not found in the current path.
+- **Weighted Median Calculation**: For each query, we calculate the total path weight and find the node where the cumulative weight is at least half of this total.
+- **Result Compilation**: The results for each query are collected in a list and returned.
+
+This solution efficiently handles the problem using DFS to explore paths and calculate cumulative weights, ensuring we can find the weighted median node for each query.

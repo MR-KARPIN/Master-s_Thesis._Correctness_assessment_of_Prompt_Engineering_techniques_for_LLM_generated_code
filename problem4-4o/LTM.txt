@@ -1,0 +1,7 @@
+Q: We need to create a python function that for a tree with n nodes rooted at node 0 (numbered from 0 to n-1), where each node i has a value given by values[i], determine the maximum sum of values along any path that starts at a node u and only goes downward in the tree. 
+
+A: To answer the question to "what is the path with the greatest value in the tree?" we need to respond to "What are the different paths?" and "what is the best sum of values along each of the paths?" to respond. 
+
+Q: We need to create a python function that given an array nums, you can perform the following operation any number of times: Select the adjacent pair with the minimum sum in nums. If multiple such pairs exist, choose the leftmost one and then replace the pair with their sum. Return the minimum number of operations needed to make the array non-decreasing (An array is said to be non-decreasing if each element is greater than or equal to its previous element (if it exists)).
+
+A:

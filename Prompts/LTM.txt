@@ -1,0 +1,7 @@
+Q: We need to create a python function that for a tree with n nodes rooted at node 0 (numbered from 0 to n-1), where each node i has a value given by values[i], determine the maximum sum of values along any path that starts at a node u and only goes downward in the tree. 
+
+A: To answer the question to "what is the path with the greatest value in the tree?" we need to respond to "What are the different paths?" and "what is the best sum of values along each of the paths?" to respond. 
+
+Q: We need to create a python function that []
+
+A:

@@ -1,0 +1,57 @@
+To solve the problem of finding the maximum possible minimum Manhattan distance between the selected `k` points on the boundary of a square, we can use a binary search approach. This involves the following steps:
+
+1. **Understand the Problem Constraints**: The points lie on the boundary of a square, and we need to select `k` such points such that the minimum Manhattan distance between any two selected points is maximized.
+
+2. **Binary Search Setup**: We will perform a binary search on the possible values of the minimum Manhattan distance, `d`, between any two selected points. The search range for `d` is from `0` to `2 * side` (the maximum possible Manhattan distance between two points on the boundary of the square).
+
+3. **Feasibility Check**: For each candidate distance `d` during the binary search, check if it's possible to select `k` points such that the minimum distance between any two points is at least `d`. 
+   - Start by sorting the points.
+   - Use a greedy approach to select points ensuring that each newly selected point is at least `d` distance apart from the previously selected point.
+
+4. **Binary Search Execution**: 
+   - If it's possible to select `k` points for a candidate distance `d`, then try a larger distance by setting the lower bound of the search range to `d + 1`.
+   - If it's not possible, then try a smaller distance by setting the upper bound to `d - 1`.
+
+5. **Return the Result**: After the binary search completes, the largest feasible `d` found is the result.
+
+Here's the Python implementation:
+
+```python
+def max_min_manhattan_distance(side, k, points):
+    # Helper function to check if a distance d is feasible
+    def can_select_k_points_with_distance(d):
+        # Try selecting points greedily
+        selected = [points[0]]
+        
+        for point in points[1:]:
+            if all(abs(point[0] - sel[0]) + abs(point[1] - sel[1]) >= d for sel in selected):
+                selected.append(point)
+                if len(selected) >= k:
+                    return True
+        return False
+
+    # Sort points to ease selection
+    points.sort()
+    
+    # Binary search for the maximum minimum distance
+    left, right = 0, 2 * side
+    best_distance = 0
+    
+    while left <= right:
+        mid = (left + right) // 2
+        if can_select_k_points_with_distance(mid):
+            best_distance = mid
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return best_distance
+
+# Example usage:
+# side = 5
+# k = 3
+# points = [(0, 0), (5, 0), (0, 5), (5, 5)]
+# print(max_min_manhattan_distance(side, k, points))  # Output depends on the specific points provided
+```
+
+**Note**: The `can_select_k_points_with_distance` function uses a greedy strategy to try and select `k` points maintaining a minimum distance `d`. It assumes that points are sorted, which helps in making the selection process straightforward. Adjust the implementation logic based on actual input constraints and test thoroughly.

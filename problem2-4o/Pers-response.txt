@@ -1,0 +1,77 @@
+To solve this problem, we can use a dynamic programming approach along with a breadth-first search (BFS) or depth-first search (DFS) traversal to account for the hierarchy and discount policy. Here's a step-by-step breakdown of how we can achieve this:
+
+1. **Parse the Input:** Understand the hierarchy and create an adjacency list to represent it. This will help us traverse the hierarchy starting from the CEO.
+
+2. **Calculate Discounted Prices:** For each employee, calculate the discounted price based on whether their boss buys the stock. This involves traversing the hierarchy to ensure that we apply discounts correctly.
+
+3. **Use Dynamic Programming for Budget Management:** We will use a dynamic programming approach to explore different combinations of stock purchases that maximize profit without exceeding the budget. This involves evaluating each employee's stock purchase decision (whether to buy or not) and the resulting profit.
+
+4. **Traverse and Calculate Maximum Profit:** Starting from the CEO, traverse the hierarchy and calculate the maximum profit using BFS/DFS, while respecting the budget constraint and applying discounts when a boss buys their stock.
+
+Here's a Python function implementing this approach:
+
+```python
+def maxProfit(n, present, future, hierarchy, budget):
+    from collections import defaultdict, deque
+
+    # Create adjacency list for the hierarchy
+    tree = defaultdict(list)
+    for boss, employee in hierarchy:
+        tree[boss].append(employee)
+
+    # Initialize profit and discounted present prices
+    profit = [future[i] - present[i] for i in range(n)]
+    discounted_present = present[:]
+
+    # Function to calculate maximum profit with budget using DFS
+    def dfs(employee, boss_bought, remaining_budget, dp):
+        # If we have already computed this state, return it
+        if dp[employee][boss_bought] != -1:
+            return dp[employee][boss_bought]
+        
+        # Calculate discounted present price if boss has bought stock
+        if boss_bought:
+            discounted_present[employee] = present[employee] // 2
+        
+        # Option 1: Don't buy the stock of this employee
+        max_profit = 0
+        
+        # Option 2: Buy the stock of this employee if budget allows
+        if remaining_budget >= discounted_present[employee]:
+            max_profit = profit[employee]
+            remaining_budget -= discounted_present[employee]
+
+        # Traverse through this employee's subordinates
+        for subordinate in tree[employee]:
+            # 1. Calculate profit if we don't buy this employee's stock
+            max_profit = max(max_profit, dfs(subordinate, False, remaining_budget, dp))
+            # 2. Calculate profit if we buy this employee's stock
+            if remaining_budget + discounted_present[employee] >= present[employee]:
+                max_profit = max(max_profit, profit[employee] + dfs(subordinate, True, remaining_budget, dp))
+        
+        # Memoize the result
+        dp[employee][boss_bought] = max_profit
+        return max_profit
+
+    # Initialize memoization table
+    dp = [[-1, -1] for _ in range(n)]
+    
+    # Start DFS from the CEO (employee 0 in 0-based index)
+    return dfs(0, False, budget, dp)
+
+# Example usage
+n = 5
+present = [100, 200, 150, 300, 250]
+future = [150, 250, 200, 350, 300]
+hierarchy = [[1, 2], [1, 3], [2, 4], [2, 5]]
+budget = 500
+print(maxProfit(n, present, future, hierarchy, budget))
+```
+
+### Explanation:
+- **Hierarchy Representation:** We use an adjacency list to represent the hierarchy of the company.
+- **Discount Application:** For each employee, we check if their boss has purchased a stock to apply the discount.
+- **Dynamic Programming Table (`dp`):** We use a table to store the results of subproblems to avoid redundant calculations.
+- **DFS Traversal:** We traverse the hierarchy using DFS to evaluate the profit for each possible decision (buy or not buy) for each employee, considering the budget constraint and potential discounts.
+
+This solution efficiently calculates the maximum profit achievable under the given constraints by leveraging the company's discount policy and dynamic programming for optimal stock purchase decisions.

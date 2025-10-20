@@ -1,0 +1,1 @@
+You need to create a function in python that []. First, create a sequence of logical reasonings. Once you have it, implement the code following that sequence.

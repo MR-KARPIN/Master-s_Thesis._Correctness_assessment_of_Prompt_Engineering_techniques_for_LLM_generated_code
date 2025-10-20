@@ -1,0 +1,32 @@
+[]
+
+
+You need to create a function in python that given a string, finds the palindrome that can be made by inserting the fewest number of characters into the given string. If there are multiple palindromes with the same minimum number of insertions, return the lexicographically earliest palindrome (the first one alphabetically). (Hint: the answer is near to: 
+
+def min_insert_palindrome(s: str) -> str:
+    from functools import lru_cache
+
+    @lru_cache(maxsize=None)
+    def helper(i: int, j: int) -> str:
+        if i > j:
+            return ""
+        if i == j:
+            return s[i]
+        if s[i] == s[j]:
+            return s[i] + helper(i + 1, j - 1) + s[j]
+        
+        # Try both options: insert at the beginning or end
+        option1 = s[i] + helper(i + 1, j) + s[i]
+        option2 = s[j] + helper(i, j - 1) + s[j]
+
+        # Choose the one with fewer insertions or lexicographically earlier
+        if len(option1) < len(option2):
+            return option1
+        elif len(option1) > len(option2):
+            return option2
+        else:
+            return min(option1, option2)
+
+    return helper(0, len(s) - 1)
+
+)

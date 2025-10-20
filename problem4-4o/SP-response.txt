@@ -1,0 +1,53 @@
+To address the second problem, we need to create a function that transforms a given array into a non-decreasing array by performing operations on adjacent pairs. The goal is to determine the minimum number of operations needed to achieve this.
+
+### Plan:
+
+1. **Identify Adjacent Pairs**: Traverse the array to find adjacent pairs (i, i+1) that are not in non-decreasing order.
+2. **Select Minimum Sum Pair**: Among all adjacent pairs, select the one with the minimum sum. If multiple pairs have the same sum, choose the leftmost one.
+3. **Replace Pair with Sum**: Replace the selected pair with their sum. This operation reduces the array's length by one.
+4. **Repeat**: Continue the process until the array becomes non-decreasing.
+5. **Count Operations**: Keep track of the number of operations performed.
+
+### Code Implementation:
+
+```python
+def minOperationsToNonDecreasing(nums):
+    operations = 0
+    
+    # Helper function to find the first pair that breaks non-decreasing order
+    def find_min_sum_pair(nums):
+        min_sum = float('inf')
+        min_index = -1
+        for i in range(len(nums) - 1):
+            if nums[i] > nums[i + 1]:
+                pair_sum = nums[i] + nums[i + 1]
+                if pair_sum < min_sum:
+                    min_sum = pair_sum
+                    min_index = i
+        return min_index
+
+    # Main loop to perform operations until the array becomes non-decreasing
+    while True:
+        # Find the index of the first pair that breaks the non-decreasing order
+        index = find_min_sum_pair(nums)
+        if index == -1:
+            break  # The array is non-decreasing
+
+        # Replace the pair at the found index with their sum
+        nums[index] = nums[index] + nums[index + 1]
+        nums.pop(index + 1)
+        operations += 1
+    
+    return operations
+
+# Example usage:
+nums = [5, 4, 3, 2, 1]
+print(minOperationsToNonDecreasing(nums))  # Output will depend on the operations needed
+```
+
+### Explanation:
+
+- **find_min_sum_pair**: This helper function iterates over the array to find the first pair (i, i+1) where nums[i] > nums[i+1]. Among such pairs, it finds the pair with the minimum sum.
+- **Main Loop**: Continuously identify and replace the problematic pair until the array is non-decreasing. The function returns the count of the operations performed.
+
+This approach efficiently modifies the array while counting the number of necessary operations.

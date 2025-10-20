@@ -1,0 +1,115 @@
+To solve the problem of finding the weighted median node for each query on a tree, we need to follow these steps:
+
+1. **Tree Representation**: Start by representing the tree using adjacency lists for easier traversal. This will help in navigating the tree efficiently.
+
+2. **Preprocessing**:
+   - **DFS for Depth and Parent**: Perform a Depth-First Search (DFS) to calculate each node's depth and parent. This will help in finding the path between any two nodes.
+   - **LCA Preprocessing**: Preprocess the tree for Least Common Ancestor (LCA) queries using Binary Lifting or a similar technique. This allows us to quickly find the LCA of any two nodes, which is essential for determining the path between them.
+
+3. **Path Weight Calculation**:
+   - For each query, determine the path from `uj` to `vj` using the LCA.
+   - Calculate the total path weight by summing the weights of the edges on this path.
+
+4. **Finding the Weighted Median**:
+   - Traverse the path from `uj` to `vj`, maintaining a running sum of edge weights.
+   - Identify the first node where this running sum is greater than or equal to half the total path weight. This node is the weighted median.
+
+5. **Answer Queries**: For each query, compute the weighted median node and store the result.
+
+Now, let's implement the solution:
+
+```python
+def find_weighted_medians(n, edges, queries):
+    from collections import defaultdict, deque
+    
+    # Step 1: Represent the tree using an adjacency list
+    tree = defaultdict(list)
+    for u, v, w in edges:
+        tree[u].append((v, w))
+        tree[v].append((u, w))
+    
+    # Step 2: Preprocess for depth, parent, and LCA
+    depth = [0] * n
+    parent = [-1] * n
+    weight_to_parent = [0] * n
+    LOG = 16  # assuming n <= 2^16, which is a safe bound for up to 10^5 nodes
+    up = [[-1] * LOG for _ in range(n)]
+    
+    def dfs(node, par, dep, w):
+        parent[node] = par
+        depth[node] = dep
+        weight_to_parent[node] = w
+        up[node][0] = par
+        for i in range(1, LOG):
+            if up[node][i-1] != -1:
+                up[node][i] = up[up[node][i-1]][i-1]
+        
+        for neighbor, weight in tree[node]:
+            if neighbor != par:
+                dfs(neighbor, node, dep + 1, weight)
+    
+    dfs(0, -1, 0, 0)
+    
+    def lca(u, v):
+        if depth[u] < depth[v]:
+            u, v = v, u
+        # Bring u and v to the same depth
+        diff = depth[u] - depth[v]
+        for i in range(LOG):
+            if (diff >> i) & 1:
+                u = up[u][i]
+        
+        if u == v:
+            return u
+        
+        for i in reversed(range(LOG)):
+            if up[u][i] != up[v][i]:
+                u = up[u][i]
+                v = up[v][i]
+        
+        return parent[u]
+    
+    # Step 3 and 4: Answer each query
+    def find_median_on_path(u, v):
+        lca_node = lca(u, v)
+        total_weight = 0
+        path = []
+        
+        # Collect path and compute total weight
+        def collect_path_and_weight(node, stop):
+            nonlocal total_weight
+            while node != stop:
+                path.append(node)
+                total_weight += weight_to_parent[node]
+                node = parent[node]
+        
+        collect_path_and_weight(u, lca_node)
+        path.append(lca_node)  # Add LCA to path
+        path.reverse()
+        collect_path_and_weight(v, lca_node)
+        
+        half_weight = total_weight / 2
+        running_weight = 0
+        
+        # Find the weighted median
+        for i in range(1, len(path)):
+            running_weight += weight_to_parent[path[i]]
+            if running_weight >= half_weight:
+                return path[i]
+        
+        return path[-1]
+    
+    results = []
+    for uj, vj in queries:
+        results.append(find_median_on_path(uj, vj))
+    
+    return results
+
+# Example usage
+n = 5
+edges = [[0, 1, 3], [1, 2, 2], [1, 3, 4], [3, 4, 6]]
+queries = [[0, 4], [2, 4]]
+print(find_weighted_medians(n, edges, queries))  # Output will vary based on input
+```
+
+This function handles the preprocessing for LCA and efficiently computes the weighted median node for each query on the tree. Adjust the `LOG` value based on the problem constraints.

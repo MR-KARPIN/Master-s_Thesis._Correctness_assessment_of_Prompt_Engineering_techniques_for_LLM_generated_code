@@ -1,0 +1,47 @@
+To solve this problem, we need to reduce the number of operations needed to make the array non-decreasing by selecting and replacing adjacent pairs with their sums. Here's a step-by-step approach:
+
+1. **Understand the Operation**: We are allowed to replace an adjacent pair with their sum. Our goal is to perform the minimum number of such operations until the array becomes non-decreasing.
+
+2. **Identify the Non-Decreasing Condition**: An array is non-decreasing if each element is greater than or equal to the previous element.
+
+3. **Strategy**:
+   - Start from the left of the array and check each pair of adjacent elements.
+   - If the current element is greater than the next, replace the pair with their sum.
+   - Continue this process until the entire array is non-decreasing.
+
+4. **Implementation**: We can iterate through the array and apply the operation whenever we find a decreasing pair.
+
+Here's the Python function implementing this approach:
+
+```python
+def minOperationsToNonDecreasing(nums):
+    n = len(nums)
+    operations = 0
+    
+    # Iterate through the array and check adjacent pairs
+    i = 0
+    while i < n - 1:
+        if nums[i] > nums[i + 1]:
+            # Replace adjacent pair with their sum
+            nums[i + 1] = nums[i] + nums[i + 1]
+            operations += 1
+            # After replacement, we need to check from the start again
+            i = 0
+        else:
+            # Move to the next pair
+            i += 1
+    
+    return operations
+
+# Example usage
+nums = [3, 1, 2, 1]
+print(minOperationsToNonDecreasing(nums))  # Output: 2
+```
+
+In this function:
+- We iterate through the array using a while loop.
+- Whenever we find a decreasing pair, we replace the second element of the pair with their sum.
+- We reset the index `i` to 0 to recheck the array from the beginning, ensuring that no other previous pairs become decreasing due to the change.
+- Count the number of operations performed until the array becomes non-decreasing.
+
+This approach ensures that we perform the minimum number of operations required to make the array non-decreasing.

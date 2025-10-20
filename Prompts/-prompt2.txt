@@ -1,0 +1,1 @@
+Write a function in python that searches for an element in a list

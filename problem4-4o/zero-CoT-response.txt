@@ -1,0 +1,59 @@
+To solve this problem, we need to repeatedly find and replace the adjacent pair with the minimum sum until the array becomes non-decreasing. Here's a step-by-step logical reasoning to approach this problem:
+
+1. **Understand the Problem**: The task is to make the array non-decreasing by performing operations where we replace the adjacent pair with their sum. We need to do this with the minimum number of operations.
+
+2. **Identify the Core Operation**: The main operation is finding the adjacent pair with the smallest sum, and then replacing these two elements with their sum. If there are multiple pairs with the same sum, we choose the leftmost pair.
+
+3. **Conditions for Non-Decreasing Array**: An array is non-decreasing if, for every element, it is less than or equal to the next element. Thus, our goal is to ensure this condition is met.
+
+4. **Algorithm Design**:
+   - While the array is not non-decreasing:
+     - Find the leftmost adjacent pair with the minimum sum.
+     - Replace the pair with their sum.
+     - Check if the array is now non-decreasing.
+   - Count each replacement operation.
+
+5. **Edge Cases**:
+   - If the input array is already non-decreasing, zero operations are needed.
+   - Arrays with one or zero elements are trivially non-decreasing.
+
+6. **Implementation**:
+   - Use a loop to iterate over the array and check if it is non-decreasing.
+   - If it is not, find the minimum sum pair, replace it, and count the operation.
+   - Repeat until the array is non-decreasing.
+
+Here's the Python code implementing this logic:
+
+```python
+def min_operations_to_non_decreasing(nums):
+    def is_non_decreasing(arr):
+        return all(arr[i] <= arr[i + 1] for i in range(len(arr) - 1))
+    
+    operations = 0
+    
+    while not is_non_decreasing(nums):
+        min_sum = float('inf')
+        min_index = -1
+        
+        # Find the leftmost adjacent pair with the minimum sum
+        for i in range(len(nums) - 1):
+            pair_sum = nums[i] + nums[i + 1]
+            if pair_sum < min_sum:
+                min_sum = pair_sum
+                min_index = i
+        
+        # Replace the pair at min_index with their sum
+        nums[min_index] = min_sum
+        nums.pop(min_index + 1)
+        
+        # Increment the operation count
+        operations += 1
+    
+    return operations
+
+# Example usage:
+nums = [5, 3, 2, 4, 1]
+print(min_operations_to_non_decreasing(nums))  # Output: number of operations needed
+```
+
+This code follows the logical reasoning and iteratively reduces the array to a non-decreasing form by making optimal replacements.

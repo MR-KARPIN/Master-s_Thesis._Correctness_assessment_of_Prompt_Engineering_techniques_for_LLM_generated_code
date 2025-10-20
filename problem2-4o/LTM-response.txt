@@ -1,0 +1,68 @@
+To solve this problem, you need to determine the maximum profit achievable given the constraints of the stock prices, discounts based on hierarchy, and the budget. Here's a step-by-step approach to constructing the Python function:
+
+1. **Parse the Input**: You have the number of employees `n`, the `present` prices array, the `future` prices array, the `hierarchy` array, and the `budget`.
+
+2. **Calculate Potential Profits**: For each employee, calculate the potential profit if their stock is bought at the given present price and sold at the expected future price. Profit is defined as `future[i] - present[i]`.
+
+3. **Apply Discounts**: Using the hierarchy, adjust the present prices to account for possible discounts. If an employee's direct boss buys their stock, the employee can buy at half price. This requires a strategy to decide optimally which stocks should be bought to maximize the discount effect.
+
+4. **Maximize Profits Within Budget**: With the adjusted present prices, determine the best way to purchase stocks to maximize profit without exceeding the budget. This involves selecting a subset of employees whose stocks can be bought within the budget for the highest profit.
+
+Here's the Python function implementing this logic:
+
+```python
+def maxProfit(n, present, future, hierarchy, budget):
+    from collections import defaultdict
+    
+    # Calculate direct profits without discounts
+    profits = [future[i] - present[i] for i in range(n)]
+    
+    # Create a mapping of each employee to their direct boss
+    boss_map = defaultdict(list)
+    for u, v in hierarchy:
+        boss_map[u - 1].append(v - 1)  # Convert to 0-based index
+    
+    # Adjust present prices with potential discounts
+    adjusted_present = present[:]
+    visited = [False] * n
+    
+    def apply_discount(employee, discount_applied=False):
+        if visited[employee]:
+            return
+        visited[employee] = True
+        if discount_applied:
+            adjusted_present[employee] = present[employee] // 2
+        for subordinate in boss_map[employee]:
+            apply_discount(subordinate, True)
+    
+    # Try applying discount starting from the CEO downwards
+    apply_discount(0)
+    
+    # Calculate profits with adjusted prices
+    adjusted_profits = [future[i] - adjusted_present[i] for i in range(n)]
+    
+    # Dynamic programming to find the maximum profit within the budget
+    dp = [0] * (budget + 1)
+    
+    for i in range(n):
+        cost = adjusted_present[i]
+        profit = adjusted_profits[i]
+        if profit > 0:  # Only consider stocks with potential profit
+            for b in range(budget, cost - 1, -1):
+                dp[b] = max(dp[b], dp[b - cost] + profit)
+    
+    return max(dp)
+
+# Example usage:
+# n = 5
+# present = [3, 8, 5, 5, 7]
+# future = [10, 12, 8, 9, 10]
+# hierarchy = [[1, 2], [1, 3], [2, 4], [2, 5]]
+# budget = 14
+# print(maxProfit(n, present, future, hierarchy, budget))  # Output: Maximum profit
+```
+
+This function considers:
+- Calculating profits for each employee.
+- Applying discounts based on hierarchy.
+- Using dynamic programming to select the optimal set of stocks to buy within the budget for maximum profit.

@@ -1,0 +1,66 @@
+To solve the problem of maximizing the profit from stock purchases under the given hierarchical discount policy and budget constraint, we need to carefully select which stocks to buy. Here's a step-by-step approach:
+
+1. **Parse the Input**: First, we'll parse the hierarchy to determine which employees are directly connected (i.e., who is whose boss).
+
+2. **Calculate Effective Purchase Prices**: For each employee, determine the effective price at which they can buy their stock. This will depend on whether their direct boss has purchased their own stock, allowing the employee to buy their stock at a discounted price.
+
+3. **Calculate Profit**: For each stock, calculate the potential profit, which is the difference between the future price and the effective purchase price.
+
+4. **Optimization using Dynamic Programming**: Given the budget constraint, use a dynamic programming approach similar to the 0/1 Knapsack problem to determine the maximum profit we can achieve without exceeding the budget. We will need to consider the effective price for each employee considering the discount policy.
+
+Here's the implementation in Python:
+
+```python
+def maxProfit(n, present, future, hierarchy, budget):
+    from collections import defaultdict
+    
+    # Build the hierarchy tree
+    tree = defaultdict(list)
+    for u, v in hierarchy:
+        tree[u].append(v)
+
+    # Calculate effective prices considering the discount policy
+    effective_prices = present[:]
+    visited = [False] * (n + 1)
+    
+    def dfs(node):
+        visited[node] = True
+        for child in tree[node]:
+            if not visited[child]:
+                # If the boss (node) buys first, the employee (child) gets a discount
+                effective_prices[child - 1] = min(effective_prices[child - 1], present[child - 1] // 2)
+                dfs(child)
+    
+    # Start DFS from the CEO (employee 1)
+    dfs(1)
+    
+    # Calculate profit for each employee
+    profits = [future[i] - effective_prices[i] for i in range(n)]
+    
+    # Dynamic programming array to store max profit for each budget capacity
+    dp = [0] * (budget + 1)
+    
+    # Apply the knapsack-like approach
+    for i in range(n):
+        # Traverse the dp array backwards to avoid overwriting
+        for b in range(budget, effective_prices[i] - 1, -1):
+            dp[b] = max(dp[b], dp[b - effective_prices[i]] + profits[i])
+    
+    return max(dp)
+
+# Example usage:
+n = 4
+present = [3, 2, 5, 7]
+future = [5, 8, 7, 10]
+hierarchy = [[1, 2], [1, 3], [3, 4]]
+budget = 10
+
+print(maxProfit(n, present, future, hierarchy, budget))  # Expected output: maximum achievable profit
+```
+
+### Explanation:
+
+- **DFS Traversal**: We perform a DFS traversal starting from the CEO to compute the effective prices using the discount policy.
+- **Profit Calculation**: Compute the profit for each employee based on the effective price after considering potential discounts.
+- **Dynamic Programming**: Use a DP array (`dp`) where `dp[b]` represents the maximum profit achievable with a budget `b`. For each employee, update the DP array considering whether or not to purchase their stock at its effective price.
+- **Result**: The maximum value in the DP array at the end gives us the maximum profit achievable within the given budget.

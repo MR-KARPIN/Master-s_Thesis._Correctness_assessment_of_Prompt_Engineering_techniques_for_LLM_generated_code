@@ -1,0 +1,30 @@
+Q: You need to create a function in python "max_min_manhattan_distance(side, k, points)" that for a tree with n nodes rooted at node 0 (numbered from 0 to n-1), where each node i has a value given by values[i], determines the maximum sum of values along any path that starts at a node u and only goes downward in the tree. 
+
+A: To find the maximum sum of values along any path, we need to calculate all of the absolute paths we can take through the tree, theese are the ones from the root to the leaves. Once we have all of them, we have to calculate which is the best sum of values along each and return the greatest between all of the paths.
+
+def bestSumDownwardTreePath(parentsList, values):
+n = len(parentsList)
+tree = [[] for _ in range(n)]
+
+# Build the tree from parentsList
+for child, parent in enumerate(parentsList):
+    if parent != -1:  # if the parent is not -1 (root)
+        tree[parent].append(child)
+
+# A helper function to perform DFS and compute the maximum path sum
+def dfs(node):
+    # Initialize the maximum sum for the current node to its value
+    max_sum = values[node]
+    
+    # Explore all the children of the current node
+    for child in tree[node]:
+        max_sum = max(max_sum, values[node] + dfs(child))
+    
+    return max_sum
+
+# Call dfs starting from the root node (0)
+return dfs(0)
+
+Q: You need to create a function in python that given an integer side, representing the edge length of a square with corners at (0, 0), (0, side), (side, 0), and (side, side) on a Cartesian plane. You are also given a positive integer k and a 2D integer array points, where points[i] = [xi, yi] represents the coordinate of a point lying on the boundary of the square. You need to select k elements among points such that the minimum Manhattan distance between any two points is maximized. Return the maximum possible minimum Manhattan distance between the selected k points. The Manhattan Distance between two cells (xi, yi) and (xj, yj) is |xi - xj| + |yi - yj|.
+
+A:

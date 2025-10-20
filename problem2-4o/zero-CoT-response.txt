@@ -1,0 +1,93 @@
+To solve this problem, we need to determine the maximum profit that can be achieved by purchasing stocks given the company's hierarchy and discount policy. We'll approach this problem step-by-step:
+
+### Logical Reasoning
+
+1. **Understand the Problem:**
+   - We have `n` employees and each has a stock with a current purchase price (`present`) and a future selling price (`future`).
+   - The goal is to maximize profit without exceeding the given budget.
+   - If an employee's direct boss buys their own stock, the employee can buy their stock at half price.
+
+2. **Parse Input:**
+   - We have three arrays: `present`, `future`, and `hierarchy`.
+   - We also have an integer `budget`.
+
+3. **Calculate Profit:**
+   - For each employee, calculate the profit as the difference between the future price and present price: `profit[i] = future[i] - present[i]`.
+
+4. **Apply Discounts:**
+   - Use the hierarchy to determine which employees can buy at a discount. If a boss buys their stock, the direct subordinates get the discount.
+
+5. **Determine Feasibility:**
+   - Create a list of potential purchases with their costs (considering discounts) and their profits.
+
+6. **Maximize Profit Within Budget:**
+   - Use a knapsack-like approach to maximize profit without exceeding the budget.
+   - Consider each stock purchase as an item with a cost and profit.
+
+### Implementation
+
+Here's the Python function to implement the solution:
+
+```python
+def maximize_profit(n, present, future, hierarchy, budget):
+    from collections import defaultdict, deque
+    
+    # Calculate profits
+    profits = [future[i] - present[i] for i in range(n)]
+    
+    # Build the hierarchy graph
+    boss_map = defaultdict(list)
+    for ui, vi in hierarchy:
+        boss_map[ui - 1].append(vi - 1)
+    
+    # Determine effective costs considering the discount policy
+    effective_cost = present[:]
+    discounted = [False] * n
+    
+    # Determine which employees can buy at a discounted price
+    def apply_discounts():
+        queue = deque([0])  # Start with the CEO
+        while queue:
+            boss = queue.popleft()
+            for employee in boss_map[boss]:
+                # If the boss buys, the employee gets a discount
+                if not discounted[employee] and discounted[boss]:
+                    effective_cost[employee] = present[employee] // 2
+                    discounted[employee] = True
+                queue.append(employee)
+    
+    # Attempt to maximize profit using a knapsack-like approach
+    def knapsack():
+        dp = [0] * (budget + 1)  # dp[i] will be the max profit with budget i
+        for i in range(n):
+            cost = effective_cost[i]
+            profit = profits[i]
+            for b in range(budget, cost - 1, -1):
+                dp[b] = max(dp[b], dp[b - cost] + profit)
+        return max(dp)
+    
+    # Initially, no one has bought their stock
+    for i in range(n):
+        if i == 0 or discounted[i]:
+            discounted[i] = True
+            apply_discounts()
+    
+    return knapsack()
+
+# Example Usage
+n = 4
+present = [10, 20, 30, 40]
+future = [30, 40, 50, 60]
+hierarchy = [[1, 2], [1, 3], [2, 4]]
+budget = 50
+
+print(maximize_profit(n, present, future, hierarchy, budget))  # Expected output: max profit achievable
+```
+
+### Explanation
+
+- **Profit Calculation:** We compute the profit for each employee.
+- **Discount Handling:** We utilize a BFS to apply discounts based on hierarchy.
+- **Knapsack Approach:** We solve the problem using a dynamic programming approach to maximize the profit given the budget constraint. This is akin to the 0/1 knapsack problem.
+
+This solution efficiently determines the best stocks to purchase to maximize profit while respecting both the budget and the hierarchical discount policy.

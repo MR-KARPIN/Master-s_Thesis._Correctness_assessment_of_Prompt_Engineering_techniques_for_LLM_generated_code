@@ -1,0 +1,72 @@
+To tackle the problem of selecting `k` points from the boundary of a square such that the minimum Manhattan distance between any two points is maximized, we'll employ a binary search strategy. Here's a detailed plan and the corresponding Python code:
+
+### Plan
+
+1. **Understand the Problem**:
+   - We have a square defined by its side length.
+   - Points lie on the boundary of this square.
+   - We need to select `k` points such that the minimum Manhattan distance between any two selected points is maximized.
+
+2. **Binary Search for the Maximum Minimum Distance**:
+   - The idea is to use binary search on the possible values of the minimum Manhattan distance.
+   - The lower bound (`low`) starts at 0, and the upper bound (`high`) is the maximum possible Manhattan distance on the boundary, which is the perimeter divided by \(k-1\).
+
+3. **Check Feasibility**:
+   - For a given candidate distance `mid`, check if it's possible to pick `k` points such that the minimum distance between any two is at least `mid`.
+   - This involves iterating over the sorted list of points and greedily selecting points that maintain this minimum distance.
+
+4. **Implement the Checking Function**:
+   - Sort the points for consistent selection.
+   - Attempt to select `k` points using the greedy approach: start from the first point and keep selecting the next point that satisfies the distance requirement.
+
+5. **Iterate with Binary Search**:
+   - If it's possible to select `k` points with the current `mid` distance, increase the `low` bound to search for a larger distance.
+   - Otherwise, decrease the `high` bound.
+
+6. **Return the Result**:
+   - The value of `low` at the end of the binary search will be the maximum possible minimum distance.
+
+### Code
+
+```python
+def maxMinManhattanDistance(side, k, points):
+    def canSelectKPoints(min_dist):
+        # Try to pick k points with at least `min_dist` between them
+        count = 1  # Start by picking the first point
+        last_x, last_y = points[0]
+        
+        for x, y in points[1:]:
+            if abs(x - last_x) + abs(y - last_y) >= min_dist:
+                count += 1
+                last_x, last_y = x, y
+                if count == k:
+                    return True
+        return count >= k
+    
+    # Sort points for consistent distance checks
+    points.sort()
+    
+    # Binary search for the maximum minimum distance
+    low, high = 0, 2 * side  # The maximum distance on the boundary can be 2 * side
+    while low < high:
+        mid = (low + high + 1) // 2
+        if canSelectKPoints(mid):
+            low = mid
+        else:
+            high = mid - 1
+
+    return low
+
+# Example usage:
+side_length = 5
+k = 3
+points = [(0, 0), (0, 5), (5, 0), (5, 5)]  # Example points on the boundary
+print(maxMinManhattanDistance(side_length, k, points))
+```
+
+### Explanation
+
+- **Sorting**: The points are sorted to make sure we can iterate over them in a consistent order.
+- **Binary Search**: We perform a binary search on the possible minimum distances. For each middle value (`mid`), we check if it's feasible to select `k` points maintaining that distance.
+- **Greedy Selection**: The `canSelectKPoints` function uses a greedy approach to select points while ensuring the required distance is maintained.
+- **Result**: The maximum possible minimum distance is returned after the binary search completes.

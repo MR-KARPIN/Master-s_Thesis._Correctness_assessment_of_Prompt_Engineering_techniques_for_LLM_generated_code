@@ -1,0 +1,32 @@
+Q: You need to create a function in python that for a tree with n nodes rooted at node 0 (numbered from 0 to n-1), where each node i has a value given by values[i], determines the maximum sum of values along any path that starts at a node u and only goes downward in the tree. 
+
+A: To find the maximum sum of values along any path, we need to calculate all of the absolute paths we can take through the tree, theese are the ones from the root to the leaves. Once we have all of them, we have to calculate which is the best sum of values along each and return the greatest between all of the paths.
+
+def bestSumDownwardTreePath(parentsList, values):
+n = len(parentsList)
+tree = [[] for _ in range(n)]
+
+# Build the tree from parentsList
+for child, parent in enumerate(parentsList):
+    if parent != -1:  # if the parent is not -1 (root)
+        tree[parent].append(child)
+
+# A helper function to perform DFS and compute the maximum path sum
+def dfs(node):
+    # Initialize the maximum sum for the current node to its value
+    max_sum = values[node]
+    
+    # Explore all the children of the current node
+    for child in tree[node]:
+        max_sum = max(max_sum, values[node] + dfs(child))
+    
+    return max_sum
+
+# Call dfs starting from the root node (0)
+return dfs(0)
+
+Q: You need to create a function in python where you are given an integer n, representing the number of employees in a company. Each employee is assigned a unique ID from 1 to n, and employee 1 is the CEO. You are given two 1-based integer arrays, present and future, each of length n, where present[i] represents the current price at which the ith employee can buy a stock today; And future[i] represents the expected price at which the ith employee can sell the stock tomorrow. The company's hierarchy is represented by a 2D integer array hierarchy, where hierarchy[i] = [ui, vi] means that employee ui is the direct boss of employee vi.
+
+Additionally, you have an integer budget representing the total funds available for investment. However, the company has a discount policy: if an employee's direct boss purchases their own stock, then the employee can buy their stock at half the original price (floor(present[v] / 2)). Return the maximum profit that can be achieved without exceeding the given budget. Note: You may buy each stock at most once. You cannot use any profit earned from future stock prices to fund additional investments and must buy only from budget.
+
+A:

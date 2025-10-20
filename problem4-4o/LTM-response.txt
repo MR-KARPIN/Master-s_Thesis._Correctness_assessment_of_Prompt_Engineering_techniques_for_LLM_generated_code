@@ -1,0 +1,52 @@
+To solve the problem of making the array non-decreasing using the described operation, you can follow a strategy that involves iteratively finding and merging the adjacent pair with the minimum sum until the array becomes non-decreasing. Here's a step-by-step outline of how you can implement this:
+
+1. **Identify the Minimum Sum Pair:** Iterate through the array to find the adjacent pair with the minimum sum. If multiple pairs have the same sum, choose the leftmost pair.
+
+2. **Merge the Pair:** Replace the identified pair with their sum, effectively reducing the size of the array by one.
+
+3. **Check if the Array is Non-Decreasing:** After each merge, check if the array is in non-decreasing order. If it is, you can stop the process.
+
+4. **Repeat as Necessary:** If the array is not yet non-decreasing, return to step 1 and repeat.
+
+5. **Count Operations:** Each merge operation is counted as one operation. Keep a count of the number of operations performed.
+
+Here's how you can implement this in Python:
+
+```python
+def min_operations_to_non_decreasing(nums):
+    def is_non_decreasing(arr):
+        for i in range(len(arr) - 1):
+            if arr[i] > arr[i + 1]:
+                return False
+        return True
+
+    operations = 0
+    while not is_non_decreasing(nums):
+        min_sum = float('inf')
+        min_index = -1
+
+        # Find the adjacent pair with the minimum sum
+        for i in range(len(nums) - 1):
+            pair_sum = nums[i] + nums[i + 1]
+            if pair_sum < min_sum:
+                min_sum = pair_sum
+                min_index = i
+
+        # Merge the pair with the minimum sum
+        nums[min_index] = min_sum
+        del nums[min_index + 1]
+
+        # Count the operation
+        operations += 1
+
+    return operations
+
+# Example usage:
+# nums = [4, 3, 2, 1]
+# print(min_operations_to_non_decreasing(nums))  # Output: 3
+```
+
+### Explanation:
+- **`is_non_decreasing`:** This helper function checks if the array is already in non-decreasing order.
+- **Main Loop:** The main loop continues until the array becomes non-decreasing. Each iteration involves finding the minimum sum pair, merging them, and counting the operation.
+- **Efficiency:** This approach ensures that each operation reduces the problem size, eventually leading to a non-decreasing array. Note that this method may not be optimal for very large arrays, but it illustrates the basic concept. Depending on the constraints, optimizations might be necessary for performance improvements.

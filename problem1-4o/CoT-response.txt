@@ -1,0 +1,59 @@
+To solve this problem, we need to find the minimum number of insertions required to transform the given string into a palindrome. We can use dynamic programming to achieve this. The idea is to build a table that will help keep track of the minimum insertions needed for each substring of the given string. Once we have the table, we can construct the palindrome by backtracking through it.
+
+Here's how you can implement this solution:
+
+```python
+def minInsertionsToPalindrome(s):
+    n = len(s)
+    # Create a table to store results of subproblems
+    dp = [[0] * n for _ in range(n)]
+    
+    # Fill the table
+    for length in range(2, n + 1):  # length of substring
+        for i in range(n - length + 1):
+            j = i + length - 1
+            if s[i] == s[j]:
+                dp[i][j] = dp[i + 1][j - 1]
+            else:
+                dp[i][j] = min(dp[i + 1][j], dp[i][j - 1]) + 1
+    
+    # Reconstruct the palindrome using the dp table
+    result = [''] * (n + dp[0][n - 1])
+    i, j = 0, n - 1
+    start, end = 0, len(result) - 1
+    
+    while i <= j:
+        if s[i] == s[j]:
+            result[start] = s[i]
+            result[end] = s[j]
+            i += 1
+            j -= 1
+        elif dp[i + 1][j] < dp[i][j - 1]:
+            result[start] = s[i]
+            result[end] = s[i]
+            i += 1
+        else:
+            result[start] = s[j]
+            result[end] = s[j]
+            j -= 1
+        start += 1
+        end -= 1
+    
+    return ''.join(result)
+
+# Example usage:
+s = "abc"
+print(minInsertionsToPalindrome(s))  # Output: "abcba"
+```
+
+### Explanation:
+1. **Dynamic Programming Table:** 
+   - `dp[i][j]` represents the minimum number of insertions needed to make the substring `s[i:j+1]` a palindrome.
+   - If `s[i] == s[j]`, then no new insertions are needed beyond what is required to make `s[i+1:j]` a palindrome, i.e., `dp[i][j] = dp[i+1][j-1]`.
+   - If `s[i] != s[j]`, then we need to insert either `s[i]` after `s[j]` or `s[j]` before `s[i]` to make it a palindrome, which results in `dp[i][j] = min(dp[i+1][j], dp[i][j-1]) + 1`.
+
+2. **Reconstructing the Palindrome:**
+   - Start from both ends of the string and use the `dp` table to guide the insertion of characters.
+   - Use two pointers (`start` and `end`) to construct the resulting palindrome from the outside in.
+
+By following these steps, you obtain the minimum insertion palindrome that is also lexicographically earliest.

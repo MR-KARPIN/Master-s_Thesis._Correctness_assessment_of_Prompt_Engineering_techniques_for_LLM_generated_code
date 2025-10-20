@@ -1,0 +1,80 @@
+To solve the problem of maximizing profit from buying and selling stocks with a given budget and hierarchy-based discount, we can approach the problem using a combination of dynamic programming and tree traversal techniques. Here's a step-by-step explanation followed by the implementation:
+
+### Plan
+
+1. **Parse the Inputs:**
+   - We have `n` employees, and each has a `present` and `future` stock price.
+   - The `hierarchy` array defines the company's hierarchy.
+
+2. **Build the Hierarchy Tree:**
+   - Create an adjacency list representation of the hierarchy to easily traverse and apply discounts.
+
+3. **Calculate the Effective Buying Cost:**
+   - Define a function to compute the effective cost for each employee based on the discount policy.
+   - Use depth-first search (DFS) to compute the cost, considering discounts from bosses.
+
+4. **Maximize Profit using Dynamic Programming:**
+   - Use a knapsack-like approach to decide which stocks to buy within the budget constraints.
+   - For each employee, decide whether to buy their stock based on the effective cost and the potential profit (`future[i] - effective_cost[i]`).
+
+5. **Return the Maximum Profit:**
+   - Implement a bottom-up DP solution where at each stage you decide whether to include an employee's stock purchase or not.
+
+### Code
+
+```python
+def calculateEffectiveCosts(n, present, hierarchy):
+    from collections import defaultdict, deque
+
+    # Build the tree from hierarchy
+    tree = defaultdict(list)
+    for boss, employee in hierarchy:
+        tree[boss].append(employee)
+
+    # Effective costs array
+    effective_costs = present[:]
+
+    # Use BFS or DFS to apply the discount policy
+    def applyDiscounts(boss):
+        for employee in tree[boss]:
+            # Apply the discount if the boss buys their stock
+            effective_costs[employee - 1] = min(effective_costs[employee - 1], present[employee - 1] // 2)
+            applyDiscounts(employee)
+
+    # Start from the CEO (employee 1)
+    applyDiscounts(1)
+
+    return effective_costs
+
+def maximizeProfit(n, present, future, hierarchy, budget):
+    # Calculate effective costs considering hierarchy and discounts
+    effective_costs = calculateEffectiveCosts(n, present, hierarchy)
+
+    # Dynamic Programming approach to solve the knapsack-like problem
+    dp = [0] * (budget + 1)
+
+    for i in range(n):
+        cost = effective_costs[i]
+        profit = future[i] - cost
+        # Update the dp array in reverse order to avoid overwriting
+        for b in range(budget, cost - 1, -1):
+            dp[b] = max(dp[b], dp[b - cost] + profit)
+
+    return max(dp)
+
+# Example usage:
+n = 5
+present = [10, 20, 30, 40, 50]
+future = [20, 30, 40, 50, 60]
+hierarchy = [[1, 2], [1, 3], [2, 4], [3, 5]]
+budget = 60
+
+print(maximizeProfit(n, present, future, hierarchy, budget))  # Output: Maximum profit
+```
+
+### Explanation
+
+- **Hierarchy Construction:** A tree is built using the given `hierarchy` to represent employee relationships.
+- **Discount Application:** Discounts are applied recursively using DFS for each employee based on their boss's stock purchase.
+- **Profit Maximization:** A dynamic programming approach similar to the knapsack problem is used to determine the best combination of stocks to buy within the given budget constraints, maximizing the potential profit.
+- **Result:** The maximum achievable profit is calculated and returned.

@@ -1,0 +1,7 @@
+Q: We need to create a python function that for a tree with n nodes rooted at node 0 (numbered from 0 to n-1), where each node i has a value given by values[i], determine the maximum sum of values along any path that starts at a node u and only goes downward in the tree. 
+
+A: To answer the question to "what is the path with the greatest value in the tree?" we need to respond to "What are the different paths?" and "what is the best sum of values along each of the paths?" to respond. 
+
+Q: We need to create a python function "max_min_manhattan_distance(side, k, points)" that given an integer side, representing the edge length of a square with corners at (0, 0), (0, side), (side, 0), and (side, side) on a Cartesian plane. You are also given a positive integer k and a 2D integer array points, where points[i] = [xi, yi] represents the coordinate of a point lying on the boundary of the square. You need to select k elements among points such that the minimum Manhattan distance between any two points is maximized. Return the maximum possible minimum Manhattan distance between the selected k points. The Manhattan Distance between two cells (xi, yi) and (xj, yj) is |xi - xj| + |yi - yj|.
+
+A:

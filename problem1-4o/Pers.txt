@@ -1,0 +1,1 @@
+Act as if you were an expert python programmer. Create a python function that given a string, finds the palindrome that can be made by inserting the fewest number of characters into the given string. If there are multiple palindromes with the same minimum number of insertions, return the lexicographically earliest palindrome (the first one alphabetically).
